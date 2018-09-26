@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<title>Star Fall</title>
+	<script type="text/javascript" lang="javascript" src="assets\phaser.js"></script>
+	<style>
+	.footerText{
+		font-size:12px;
+	}
+	
+	</style>
+
+</head>
+<body>
+	<center>
+	<div id="game_area"></div>
+	</center>
+<script type="text/javascript" lang="javascript">
+
+		/* ========= Game area resolution ==========*/
+		var GAME_WIDTH = 522;
+		var GAME_HEIGHT = 640;
+		
+		/* ============= Star fall is powered by Phaser v2.0.6(HTML5 Game Engine) ============ */
+		/* ========== Game script ========== */
+		var game = new Phaser.Game(GAME_WIDTH,GAME_HEIGHT,Phaser.AUTO, 'game_area', {preload: preload, create: create, update: update});
+		
+		var cursors;
+		var layer;
+		var map;
+		var player;
+		var stars;
+		var star;
+		var score = 0;
+		var pauseLabel;
+		var scoreLabel;
+		var levelMusic;
+		var gameOver;
+		
+		function preload(){
+		
+			/* ========== Loading all the necessary game resources ========== */
+			game.load.image('star','assets/star.png');
+			game.load.image('tileset','assets/tilesetGround.jpg');		//Level tileset image.
+			game.load.spritesheet('character','assets/player.png',32,48);
+			game.load.tilemap('environment','assets/level.json',null,Phaser.Tilemap.TILED_JSON); 	// Loads the JSON level tilemep.
+		}
+		
+			function create(){
+		
+				game.stage.backgroundColor = '#000000';		//Default background color.
+			
+				map = game.add.tilemap('environment');		//Adds the tilemap.
+				map.addTilesetImage('tilesetGround','tileset');
+				
+				layer = map.createLayer('baseLayer');
+				layer.resizeWorld();
+				layer.wrap = true;
+				map.setCollision(1); 		//Adding collision properties to the ground tile.
+			
+				/* ========== Score text ========== */
+				scoreLabel = game.add.text(15,25,'Score -  ',{font:'20px Arial',fill: '#fff'});
+			 			 
+				/* ========== Enforcing physics properties ========== */
+				game.physics.startSystem(Phaser.Physics.ARCADE);	// Enforcing physics properties to the environment.
+				player = game.add.sprite(250,430,'character');		// Adding the character sprite.
+				game.physics.enable(player,Phaser.Physics.ARCADE);
+				player.body.bounce.y = 0.4;
+				player.body.gravity.y = 300;
+				player.body.collideWorldBounds = true;
+			
+				/* ========== Player animations ========== */
+				player.animations.add('runLeft',[0,1,2,3],15,true);
+				player.animations.add('runRight',[5,6,7,8],15,true);
+				player.animations.add('standStill',[4],10,true);
+				
+				/* ========== Controls ========== */
+				cursors = game.input.keyboard.createCursorKeys();
+				game.input.keyboard.addKeyCapture([ Phaser.Keyboard.LEFT, Phaser.Keyboard.RIGHT, Phaser.Keyboard.SPACEBAR ]);//  Stop the following keys from propagating up to the browser.
+
+				/* ========== Score calculating loops ==========*/
+				game.time.events.loop(200,displayScore,this);
+				game.time.events.loop(100,createStar,this);
+			}
+		
+		function update(){
+			
+			player.body.velocity.x = 0;
+			game.physics.arcade.collide(player,layer);		//Collide player and layer.
+			
+			/* ========== Manipulating character animations ========== */
+			if(cursors.left.isDown){
+				player.body.velocity.x = -150;
+				player.animations.play('runLeft');
+			}
+			
+			else if(cursors.right.isDown){
+				player.body.velocity.x = 150;
+				player.animations.play('runRight');
+			}
+			
+			else{
+				player.body.velocity.x = 0
+				player.animations.play('standStill');
+			}		
+			
+		}
+		
+		function createStar(){
+		
+			/* ========== Randomly generated stars within a given interval ========== */
+			star = game.add.sprite(Math.random() * (520 - 0) + 0,Math.random() * (120 - 0) + 0,'star');
+			game.physics.enable(star, Phaser.Physics.ARCADE);
+			game.physics.arcade.overlap(player,star,playerStarCollide,null,this);
+			star.body.gravity.y = 250;
+			
+			}
+		
+		function displayScore(){
+			score++;
+			scoreLabel.text = "Score " +score;
+		}	
+			
+		function playerStarCollide(){
+			alert("You lose!\n Score:  " +score);
+		
+		}	
+		
+		</script><br>
+		<center>
+		<footer class="footerText">Powered by <a href="http://www.phaser.io" target="_blank">Phaser v2.0.6</a></footer>
+		</center>
+</body>
+</html>

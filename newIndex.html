@@ -1,0 +1,67 @@
+<!doctype html>
+<head>
+	<title>Star Fall!</title>
+	<meta charset="UTF-8"></meta>
+		<script type="text/javascript" lang="javascript" src="assets\phaser.js"></script>
+		<script type="text/javascript" lang="javascript" src="library\startMenu.js"></script>
+		<script type="text/javascript" lang="javascript" src="library\gameState.js"></script>
+
+	<style>
+		body{
+			background-color:#4c44c3;
+		}
+
+		.footerText{
+			font-size: 12px;
+		}
+
+	</style>
+</head>	
+<body>
+	<center>
+		<div id="gameArea"></div>
+	</center>
+	
+	<script type="text/javascript" lang="javascript">
+
+		/* ========= Game area resolution ==========*/
+		var GAME_WIDTH = 522;
+		var GAME_HEIGHT = 640;
+		var backImage;
+		var titleImage;
+		var clickToStart;
+		
+		/* ============= Star fall is powered by Phaser v2.0.6(HTML5 Game Engine) ============ */
+		/* ========== Game script ========== */
+		var game = new Phaser.Game(GAME_WIDTH,GAME_HEIGHT,Phaser.AUTO, 'gameArea',{preload: preload, create: create});		
+		game.state.add('gameState',starFall.gameState);
+		
+		function preload(){
+			/* ========== Preloading game assets ========== */
+			game.load.image('menuImage','assets/menuImage.png');
+			game.load.image('titleImage','assets/titleImage.png');
+			game.load.image('clickToStart','assets/clickToStart.png');
+
+		}
+
+		function create(){
+
+			backImage = game.add.sprite(0,0,'menuImage');	//Creating the backgroung image.
+			backImage.inputEnabled = true;		//Making the image to be suseptible to an input.
+			backImage.events.onInputDown.addOnce(startGame,this); 
+
+			titleImage = game.add.sprite(75,100,'titleImage');	
+			clickToStart = game.add.sprite(130,400,'clickToStart');
+			
+		}
+
+		function startGame(){
+			game.state.start('gameState');		//Invoking the main game state.
+		}
+		
+	</script>
+	<center>
+	<footer class="footerText"><br>Powered by <a href="http://www.phaser.io" target="_blank">Phaser v2.0.6</a></footer>
+	</center>
+	</body>
+<html>
